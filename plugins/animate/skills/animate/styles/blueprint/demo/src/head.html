@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Blueprint demo</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #050f24; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  BLUEPRINT DEMO — 9:16, 8.0s @ 120 BPM, 24fps, motion on 2s. Sheet 1: a round flange is drawn on and dimensioned.
+//  Its circle morphs into the square outline of the revised bracket, which is dimensioned on sheet 2. A drafting
+//  compass (the hero) stays on the sheet and reads out its opening.
+//  Build: node <skill>/tools/build.mjs <skill>/styles/blueprint/demo
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const CX = 500;   // caption centre x: the middle of the safe area (x 60-940)
+
+const ERA_LIST = [[0, 4, () => sceneFlange()], [4, 8, () => sceneBracket()]];
+const SHOTS = [
+  ['flange',  0, 0.0, 4.0, 'sheet 1: a round flange, drawn on and dimensioned'],
+  ['bracket', 1, 4.0, 8.0, 'the circle becomes a square: sheet 2, revision B'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [4.0],
+  cues: { frame: 0.0, title: 0.4, hero: 0.6, shape: 0.9, centre: 1.4, holes: 1.9, dim: 2.2, leader: 2.7, cap: 2.5, react: 2.2, title2: 4.7, holes2: 4.9, dimW: 5.2, dimH: 5.5, leader2: 6.0, cap2: 6.2, react2: 6.9 },
+  acts: [
+    { name: '1 Flange',  role: 'build', t0: 0.0, t1: 4.0 },
+    { name: '2 Bracket', role: 'gift',  t0: 4.0, t1: 8.0 },
+  ],
+  board: [
+    { t: 2.2, title: 'a flange, drawn on and dimensioned', sound: 'a soft pluck on each line, a chime on the callout', next: 'the circle becomes a square' },
+    { t: 6.9, title: 'revision B: a square bracket', sound: 'a pad, ticks along the dimensions', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

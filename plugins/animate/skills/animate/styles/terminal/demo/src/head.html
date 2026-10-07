@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terminal demo</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #050805; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  TERMINAL DEMO — 9:16, 8.0s @ 120 BPM, 24fps, motion on 1s (typing steps per frame). A scan command types itself, a
+//  progress bar fills and an ASCII star grows in a viewport pane; the pane morphs into a wider one in a second run,
+//  where a block-character histogram plays and the star grows once more.
+//  Build: node <skill>/tools/build.mjs <skill>/styles/terminal/demo
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const CX = 500;   // caption centre x: the middle of the safe area (x 60-940)
+
+const ERA_LIST = [[0, 4, () => sceneScan()], [4, 8, () => sceneGrow()]];
+const SHOTS = [
+  ['scan', 0, 0.0, 4.0, 'a scan command types itself; the bar fills; a star starts to grow'],
+  ['grow', 1, 4.0, 8.0, 'the pane widens; a histogram plays; the star grows to its full size'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [4.0],
+  cues: { cmd: 0.1, load: 1.2, box: 0.6, bar: 1.9, found: 3.0, star: 1.0, cmd2: 4.4, hist: 5.2, star2: 4.6, done: 6.4, prompt: 7.0 },
+  acts: [
+    { name: '1 Scan', role: 'build', t0: 0.0, t1: 4.0 },
+    { name: '2 Grow', role: 'gift', t0: 4.0, t1: 8.0 },
+  ],
+  board: [
+    { t: 3.0, title: 'a scan finds one object', sound: 'key clicks on every typed character', next: 'the pane widens' },
+    { t: 6.4, title: 'the star reaches full size', sound: 'a low drone, clicks, a blip on done', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

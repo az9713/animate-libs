@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kinetic type demo</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0b0b; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  KINETIC TYPE DEMO — 9:16, 8.0s @ 120 BPM, 24fps, motion on 1s. Era 1 (yellow, ink): WORDS ARE PICTURES slams, flies and
+//  rises into place while an asterisk spins on a block. The block morphs into a circle (era 2: blue, off-white, red):
+//  the asterisk becomes a '?', WHAT IF is set around it, and the '?' flips into a '!'.
+//  Build: node <skill>/tools/build.mjs <skill>/styles/kinetic-type/demo
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = '"Arial Black", "Segoe UI Black", "Helvetica Neue", Helvetica, Impact, Arial, sans-serif';   // only kit/board.js reads this
+const CX = 500;   // centre x of the safe area (x 60-940)
+
+const ERA_LIST = [[0, 4, () => sceneWords()], [4, 8, () => sceneIf()]];
+const SHOTS = [
+  ['words', 0, 0.0, 4.0, 'WORDS ARE PICTURES: slam, fly, rise; an asterisk spins on a block'],
+  ['if',    1, 4.0, 8.0, 'the block becomes a circle; WHAT IF, and the ? flips to !'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [4.0],
+  cues: { words: 0.0, are: 0.5, pics: 1.0, rule: 1.5, hero: 1.5, cap: 2.0, wave: 2.5, what: 4.5, if: 5.0, fill: 5.5, cap2: 6.0, flip: 6.5, wave2: 7.0 },
+  acts: [
+    { name: '1 Words', role: 'build', t0: 0.0, t1: 4.0 },
+    { name: '2 What if', role: 'gift', t0: 4.0, t1: 8.0 },
+  ],
+  board: [
+    { t: 2.0, title: 'words are pictures', sound: 'a sub hit on the slam, plucks as the letters land', next: 'the block becomes a circle' },
+    { t: 6.5, title: 'what if ... ?', sound: 'a pad, a chime on the flip', next: 'ends' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

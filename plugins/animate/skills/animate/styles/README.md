@@ -14,6 +14,10 @@ Build the gallery of every style's sample: `node tools/gallery.mjs styles.png [<
 | [isometric](isometric/STYLE.md) | isometric product line art: constant hairlines, white faces, rounded slabs, one dark accent; light or dark ground | on 1s, spring settles | this demo (the first style made with new-style.md) |
 | [pixel](pixel/STYLE.md) | low-resolution eras: draw at the true resolution, upscale nearest-neighbour | on 1s or 2s | a fixed-stage history of AI video |
 | [chalkboard](chalkboard/STYLE.md) | chalk on dark slate: every mark eroded into speckled chalk, hatching fills, handwriting, equation images as chalk, a chalk-stick hero | on 2s | a 6s derivation demo (needs `"libs": ["mathjax"]` for equations) |
+| [blueprint](blueprint/STYLE.md) | engineering blueprint: deep blue ground with a grid, pale linework that draws on, dimension lines, callouts, a title block, a drafting-compass hero | on 2s | this demo (8 s, no reference measured) |
+| [terminal](terminal/STYLE.md) | CRT terminal: phosphor green on near-black, typed text with a block cursor, box frames, scanlines and bloom, an ASCII star hero | on 1s | this demo (8 s, no reference measured) |
+| [flat-vector](flat-vector/STYLE.md) | flat-vector explainer: no outlines, rounded geometric shapes, six bold colours, soft shadow, spring motion, a geometric character hero | on 1s, spring settles | this demo (8 s, no reference measured) |
+| [kinetic-type](kinetic-type/STYLE.md) | kinetic typography: giant black-weight type, ink-on-colour eras, outline and solid words, glyph hero, fast springs | on 1s, spring settles | this demo (8 s, no reference measured) |
 | custom | any other look: show it a video, stills or a web page and it measures the style, matches frames with you and saves `styles/<name>/` ([new-style.md](../new-style.md)) | either | woodblock prints, neon signs (test runs) |
 
 A new look gets made from the user's references with [new-style.md](../new-style.md), then saved as a style beside the project's pieces (`<project>/styles/<name>/`), where `build.mjs` finds it.
