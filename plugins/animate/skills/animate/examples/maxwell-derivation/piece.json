@@ -1,0 +1,10 @@
+{
+  "name": "maxwell-derivation",
+  "title": "Maxwell derivation",
+  "format": { "width": 1080, "height": 1920, "fps": 24, "bpm": 120, "duration": 20, "frames": 480 },
+  "storyFormat": "equation derivation (1 era, term-matched morphs)",
+  "style": "chalkboard",
+  "libs": ["mathjax"],
+  "scenes": ["src/glyphs.js", "src/scenes.js"],
+  "review": { "safe": { "top": 240, "bottom": 420, "right": 140 }, "refs": {} }
+}

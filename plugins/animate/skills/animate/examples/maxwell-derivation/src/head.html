@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maxwell derivation</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b1213; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  MAXWELL DERIVATION — 9:16, 20.0s @ 120 BPM, 24fps, motion on 2s. Spec: SPEC.md (shared with the manim route).
+//  One era, no cuts. Equations are MathJax SVG drawn glyph by glyph (src/glyphs.js) so unchanged terms slide.
+//  Build: node <skill>/tools/build.mjs <skill>/examples/maxwell-derivation
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 20.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = '"Segoe Print", "Chalkboard SE", "Bradley Hand", "Ink Free", "Comic Sans MS", cursive';
+const CX = 500;
+
+const ERA_LIST = [[0, 20, () => sceneDerivation()]];
+const SHOTS = [['derivation', 0, 0.0, 20.0, 'potentials, substitution, the Lorenz gauge, the wave equations']];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [],
+  cues: { divB: 0.2, toB: 1.8, E: 3.4, erase: 5.6, gauss: 6.2, toGaussP: 7.4, amp: 9.0, toAmpB: 10.3, gauge: 12.3, back: 13.5, waves: 16.0, box: 17.3, wow: 18.5 },
+  acts: [
+    { name: '1 Potentials', role: 'build', t0: 0.0, t1: 6.0 },
+    { name: '2 Substitute', role: 'build', t0: 6.0, t1: 12.0 },
+    { name: '3 Waves',      role: 'gift',  t0: 12.0, t1: 20.0 },
+  ],
+  board: [
+    { t: 3.4, title: 'B is a curl, then E follows', sound: 'soft plucks on each write', next: 'the potentials go into Gauss and Ampere' },
+    { t: 9.0, title: 'the laws in terms of the potentials', sound: 'a pad, plucks', next: 'the gauge' },
+    { t: 16.0, title: 'the wave equations', sound: 'silence, then a chime', next: 'holds' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;
