@@ -1,5 +1,7 @@
 # Animate — procedural animation in any style, for Claude Code
 
+> **animate-libs** is a local extension of [cth9191/animate](https://github.com/cth9191/animate) (MIT). It adds nine vendored JavaScript libraries (`plugins/animate/skills/animate/libs/`), an equation path and five more styles. The upstream repo is unchanged. Install this copy: `claude plugin marketplace add <path to this folder>` then `claude plugin install animate-libs@animate-libs-local`. Use it as `/animate-libs`. Where the text below says `animate`, read `animate-libs`.
+
 A Claude Code skill that makes short animated videos entirely in code: one `<canvas>`, drawn and scored procedurally, deterministic frame by frame, rendered to MP4 with a headless browser and ffmpeg. Explainers, histories, little stories — in one of the built-in styles, or in a new look matched from your own references.
 
 ![the built-in styles](docs/styles.png)

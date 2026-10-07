@@ -1,14 +1,14 @@
 {
-  "name": "animate",
+  "name": "animate-libs-local",
   "owner": {
-    "name": "cth9191"
+    "name": "Simon"
   },
-  "description": "Procedural animation in any style for Claude Code.",
+  "description": "Procedural animation in any style, with vendored JavaScript libraries. Built on cth9191/animate (MIT).",
   "plugins": [
     {
-      "name": "animate",
+      "name": "animate-libs",
       "source": "./plugins/animate",
-      "description": "Short procedural animations in any style — seven built in, or matched from your references — as single-file canvas videos, built through story, look and storyboard check-ins."
+      "description": "Short procedural animations as single-file canvas videos. Adds nine vendored JavaScript libraries (waapi, gsap, d3, katex, mathjax, lottie, matter, three, glsl) seeked frame by frame, an equation path, and five more styles (chalkboard, blueprint, terminal, flat-vector, kinetic-type). Extends cth9191/animate; the upstream repo is not changed."
     }
   ]
 }
