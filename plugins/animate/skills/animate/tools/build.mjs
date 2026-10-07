@@ -80,18 +80,38 @@ if (assetFiles.length) {
   for (const n of assetFiles) { const b = fs.readFileSync(path.join(ASSET_DIR, n)); assetBytes += b.length; src[n] = `data:${MIME[n.split('.').pop().toLowerCase()]};base64,` + b.toString('base64'); }
   inject.push(`// ---- assets/ (embedded by tools/build.mjs): ${assetFiles.join(', ')}\nconst ASSETS = {};\nwindow.ASSETS_READY = Promise.all(Object.entries(${JSON.stringify(src)}).map(([k, u]) => { const i = new Image(); i.src = u; ASSETS[k] = i; return i.decode(); }));`);
 }
+// piece.json "libs": ["gsap", ...] -> libs/<name>.js (the skill's, or <piece>/libs/): vendored libraries, inlined as-is.
+// They are exempt from the check above (XML namespace names and licence links hold "http://"); export, tile and review
+// block every http(s) request at run time instead (tools/offline.mjs). A clock shim goes first: Date.now,
+// performance.now and requestAnimationFrame follow renderFrame(t), so a library must be seeked, never played.
+// Each goes in its own <script> before the piece's, so it runs outside the piece's "use strict" (gsap sets window.window).
+const libs = meta.libs || [], libScripts = [];
+if (libs.length) {
+  const libFile = (n) => [path.join(ROOT, 'libs', n + '.js'), path.join(SKILL, 'libs', n + '.js')].find((f) => fs.existsSync(f));
+  libScripts.push('// ---- kit/clock.js\n' + fs.readFileSync(path.join(SKILL, 'kit', 'clock.js'), 'utf8').replace(/\s*$/, '\n'));
+  for (const n of libs) {
+    const f = libFile(n);
+    if (!f) { console.error(`missing lib: ${n} (libs/${n}.js beside the piece or in the skill)`); process.exit(1); }
+    libScripts.push(`// ---- libs/${n}.js\n` + fs.readFileSync(f, 'utf8').replace(/<\/script/gi, '<\\/script').replace(/\s*$/, '\n'));
+  }
+}
 if (inject.length) {
   const at = out.indexOf('"use strict";') >= 0 ? out.indexOf('"use strict";') + '"use strict";'.length : out.indexOf('<script>') + '<script>'.length;
   out = out.slice(0, at) + '\n' + inject.join('\n') + out.slice(at);
 }
-// with assets, tools wait until the images are decoded: window.renderFrame appears only then
-if (assetFiles.length) {
+// with assets or libs, tools wait until everything has loaded: window.renderFrame appears only then.
+// A library that loads something (fonts, WASM, textures) pushes its promise to window.LIBS_READY (kit/clock.js).
+if (assetFiles.length || libs.length) {
   const end = out.lastIndexOf('</script>');
-  out = out.slice(0, end) + `// ---- hold renderFrame until the assets are decoded (export, review and tile wait for it)\n{ const rf = window.renderFrame; window.renderFrame = undefined; window.ASSETS_READY.then(() => { window.renderFrame = rf; }); }\n` + out.slice(end);
+  const wait = [assetFiles.length ? 'window.ASSETS_READY' : null, libs.length ? '...window.LIBS_READY' : null].filter(Boolean).join(', ');
+  const clock = libs.length ? 'const f = rf; rf = (t, ...a) => { window.__setClock(t); return f(t, ...a); }; ' : '';
+  out = out.slice(0, end) + `// ---- hold renderFrame until the assets and libraries have loaded (export, review and tile wait for it)\n{ let rf = window.renderFrame; window.renderFrame = undefined; Promise.all([${wait}]).then(() => { ${clock}window.renderFrame = rf; }); }\n` + out.slice(end);
 }
 const m2 = out.match(/<script>([\s\S]*)<\/script>/);
 try { new vm.Script(m2[1], { filename: 'index.html' }); } catch (e) { console.error('syntax error:', e.message); process.exit(1); }
+for (const c of libScripts) try { new vm.Script(c, { filename: 'lib' }); } catch (e) { console.error('syntax error in a lib:', e.message); process.exit(1); }
+if (libScripts.length) { const at = out.indexOf('<script>'); out = out.slice(0, at) + libScripts.map((c) => `<script>\n${c}</script>\n`).join('') + out.slice(at); }
 fs.writeFileSync(path.join(ROOT, 'index.html'), out);
-const extras = [fs.existsSync(beatsFile) ? 'beats.json' : null, fs.existsSync(voiceFile) ? 'voice.json' : null, assetFiles.length ? `${assetFiles.length} asset(s), ${(assetBytes / 1e6).toFixed(1)} MB` : null].filter(Boolean);
+const extras = [fs.existsSync(beatsFile) ? 'beats.json' : null, fs.existsSync(voiceFile) ? 'voice.json' : null, assetFiles.length ? `${assetFiles.length} asset(s), ${(assetBytes / 1e6).toFixed(1)} MB` : null, libs.length ? `libs: ${libs.join(', ')}` : null].filter(Boolean);
 if (assetBytes > 12e6) console.warn(`warning: ${(assetBytes / 1e6).toFixed(1)} MB of assets — resize screenshots to the size they're shown at`);
 console.log(`built ${path.join(ROOT, 'index.html')}: ${out.split('\n').length} lines from ${parts.length} parts (style: ${styleName})${extras.length ? ' + ' + extras.join(' + ') : ''}; syntax ok; no external assets`);

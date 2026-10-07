@@ -24,6 +24,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { GPU_ARGS, gpuReport } from './gpu.mjs';
+import { blockNetwork } from './offline.mjs';
 
 const require = createRequire(import.meta.url);
 function loadPlaywright() {
@@ -66,6 +67,7 @@ let browser = await chromium.launch({ args: BASE_ARGS });
 
 // read the frame size before sizing the real viewport
 const probe = await browser.newPage();
+await blockNetwork(probe);
 await probe.goto(url);
 await probe.waitForFunction(() => window.TIMELINE);
 const meta = await probe.evaluate(() => {
@@ -80,6 +82,7 @@ if (meta.gpu || flag('gpu')) {
 }
 
 const context = await browser.newContext({ viewport: { width: meta.width, height: meta.height }, deviceScaleFactor: 1 });
+await blockNetwork(context);
 async function openPage() {
   const page = await context.newPage();
   page.on('pageerror', (e) => { console.error('PAGE ERROR:', e.message); process.exitCode = 1; });

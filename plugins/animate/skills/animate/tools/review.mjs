@@ -29,6 +29,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { GPU_ARGS, gpuReport } from './gpu.mjs';
+import { blockNetwork } from './offline.mjs';
 import { textCheck, printTextCheck } from './textcheck.mjs';
 
 const require = createRequire(import.meta.url);
@@ -60,6 +61,7 @@ const refPath = (n) => {
 const PAGE_URL = pathToFileURL(path.join(ROOT, 'index.html')).href + '?export=1' + (FORMAT ? `&format=${encodeURIComponent(FORMAT)}` : '');
 let browser = await chromium.launch();
 let page = await browser.newPage();
+await blockNetwork(page);
 await page.goto(PAGE_URL);
 await page.waitForFunction(() => window.TIMELINE && window.renderFrame);
 // WebGL pieces (TIMELINE.gpu) re-open on the real GPU: the anchor pass renders hundreds of frames
@@ -68,6 +70,7 @@ if (await page.evaluate(() => !!window.TIMELINE.gpu)) {
   browser = await chromium.launch({ args: GPU_ARGS });
   page = await browser.newPage();
   await gpuReport(page);
+  await blockNetwork(page);
   await page.goto(PAGE_URL);
   await page.waitForFunction(() => window.TIMELINE && window.renderFrame);
 }

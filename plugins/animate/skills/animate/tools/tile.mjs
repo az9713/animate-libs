@@ -7,6 +7,7 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { blockNetwork } from './offline.mjs';
 const require = createRequire(import.meta.url);
 const { chromium } = (() => { try { return require('playwright'); } catch { return require(path.join(execSync('npm root -g').toString().trim(), 'playwright')); } })();
 const argv = process.argv.slice(2);
@@ -19,6 +20,7 @@ const frames = fr.map(Number);
 const URL = pathToFileURL(path.resolve(piece.endsWith('.html') ? piece : path.join(piece, 'index.html'))).href + '?export=1' + (format ? `&format=${encodeURIComponent(format)}` : '');
 const b = await chromium.launch();
 const p = await b.newPage({ viewport: { width: 1080, height: 1920 } });
+await blockNetwork(p);
 p.on('pageerror', (e) => console.error('PAGE ERROR:', e.message));
 p.on('console', (m) => console.error('console:', m.type(), m.text()));
 await p.goto(URL);
@@ -29,7 +31,7 @@ const res = await p.evaluate(async (frames) => {
   const g = document.createElement('canvas'); g.width = cols * 270; g.height = rows * 480; const x = g.getContext('2d');
   const src = document.getElementById('c'); const ms = [], first = [];
   for (let i = 0; i < frames.length; i++) {
-    const t0 = performance.now(); window.renderFrame(frames[i] / window.TIMELINE.fps); ms.push(performance.now() - t0);
+    const now = window.__realNow || (() => performance.now()), t0 = now(); window.renderFrame(frames[i] / window.TIMELINE.fps); ms.push(now() - t0);
     const cx = (i % cols) * 270, cy = Math.floor(i / cols) * 480;
     first.push(src.toDataURL()); x.drawImage(src, cx, cy, 270, 480);
     x.fillStyle = 'rgba(255,0,0,0.18)'; x.fillRect(cx, cy + 1540 * s, 270, 380 * s); x.fillRect(cx + 950 * s, cy, 130 * s, 480);
