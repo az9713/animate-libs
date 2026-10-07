@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chalkboard demo</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b1213; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  CHALKBOARD DEMO — 9:16, 6.0s @ 120 BPM, 24fps, motion on 2s. A charge makes the scalar potential; the circle that
+//  holds the charge morphs into the block that holds a current, which makes the vector potential. Both equations are
+//  MathJax images drawn as eroded chalk (chImg), so they prove that equations stay readable on the board.
+//  Build: node <skill>/tools/build.mjs <skill>/styles/chalkboard/demo
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 6.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = '"Segoe Print", "Chalkboard SE", "Bradley Hand", "Ink Free", "Comic Sans MS", cursive';
+const CX = 500;   // caption centre x: the middle of the safe area (x 60-940)
+
+const ERA_LIST = [[0, 3, () => sceneCharge()], [3, 6, () => sceneCurrent()]];
+const SHOTS = [
+  ['charge',  0, 0.0, 3.0, 'a charge: E = −∇φ − ∂A/∂t, written in chalk'],
+  ['current', 1, 3.0, 6.0, 'the circle becomes a block; a current: B = ∇×A'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [3.0],
+  cues: { eq: 0.2, shape: 0.9, label: 1.5, lines: 1.8, eq2: 3.4, shape2: 3.7, label2: 4.2, flow: 4.4, wow: 5.0 },
+  acts: [
+    { name: '1 Charge',  role: 'build', t0: 0.0, t1: 3.0 },
+    { name: '2 Current', role: 'gift',  t0: 3.0, t1: 6.0 },
+  ],
+  board: [
+    { t: 1.9, title: 'a charge makes a potential', sound: 'chalk ticks on each stroke, a chime on the label', next: 'the circle becomes a block' },
+    { t: 5.0, title: 'a current makes a potential too', sound: 'a pad, soft ticks along the flow', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;
