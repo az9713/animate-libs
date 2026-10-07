@@ -76,7 +76,7 @@ Handwriting stack from the piece head (`HAND`): `"Segoe Print", "Chalkboard SE",
 - Erased-and-rewritten text (a smudge where something was wiped) is not a primitive.
 - Equation images are drawn whole (left-to-right wipe); a per-stroke write-on of the glyph paths is not done. `MJ.svg[id]` holds the paths if that is wanted.
 - Layers are rasterised at 1:1: a camera zoom above ~1.2 will look soft.
-- The demo's equations, `E = −∇φ − ∂A/∂t` and `B = ∇×A`, are standard textbook forms written from memory; they have not been checked against a source in this repo.
+- The demo's equations, `E = −∇φ − ∂A/∂t` and `B = ∇×A`, were checked 2026-10-07 against Wikipedia "Lorenz gauge condition" and the Cambridge IB electromagnetism notes (`dec41.user.srcf.net/h/IB_L/electromagnetism/5_3`): both match. The rendered frames show the same glyphs as the TeX source.
 
 ## Proven on
 
