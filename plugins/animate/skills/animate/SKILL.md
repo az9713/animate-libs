@@ -17,7 +17,7 @@ All paths below are relative to this skill's base directory. Pieces live in the 
 1. **No animating before the storyboard is approved.** The check-ins exist because a wrong story or look costs a full build.
 2. **Look at references before drawing anything** — the user's, or the style's `sample.png` and demo. Then check every key frame against [grammar/FRAME.md](grammar/FRAME.md) and the style's own checklist in its `STYLE.md`.
 3. **Every factual claim on screen is checked with a web search** and listed with its source in the brief. Never claim "first" without a source.
-4. **Single file, all code:** one `index.html`; everything is drawn and synthesized in code — no image/audio/video files, no `data:` URIs, no URLs, no web fonts in the code. `tools/build.mjs` enforces it. Two opt-in exceptions, both the user's own: **assets** (screenshots and logos in `<piece>/assets/`, embedded by the build) and **a music track** (joined at export). See Assets and Music below.
+4. **Single file, all code:** one `index.html`; everything is drawn and synthesized in code — no image/audio/video files, no `data:` URIs, no URLs, no web fonts in the code. `tools/build.mjs` enforces it. Opt-in exceptions: **assets** (screenshots and logos in `<piece>/assets/`, embedded by the build), **a music track** (joined at export), and **libs** (vendored JavaScript from `libs/`, below). See Assets, Music and Libraries below.
 5. **Deterministic:** seeded randomness only (`RNG(...)`), the boil index `B` for per-step variation. Never `Math.random()` or wall-clock time.
 6. **Reference media stays local.** Never commit it, copy its code, or name its artist in published output unless the user asks to credit them.
 7. **"Done" is measured:** `tools/review.mjs` passes and you have looked at the contact sheets. Report the numbers, not "looks good".
@@ -92,6 +92,14 @@ Ask at intake (question 7) when the subject is a product. Then:
 - Draw them with `drawAsset('home.png', x, y, w, h, { fit: 'cover' | 'contain', r })` inside the style's own framing (a torn-paper photo, an inked frame, a printed card) so they belong to the look. `asset(name)` returns the image.
 - **Real product UI only:** animate the real screens (crop, push in, reveal, point at them with the hero); never draw a fake screen as if it were the product. Sample brand colours from the screenshots.
 
+## Libraries (optional)
+
+List vendored JavaScript libraries in `piece.json`: `"libs": ["gsap", "d3"]`. `tools/build.mjs` inlines `kit/clock.js` first, then each `libs/<name>.js` (or `<piece>/libs/<name>.js`), each in its own script before the piece's. The URL check skips these files (XML namespace names, licence links). `export`, `tile` and `review` block every `http(s)` request through `tools/offline.mjs` and fail on one.
+- **Seek, never play.** The clock shim makes `Date.now`, `performance.now` and `requestAnimationFrame` follow `renderFrame(t)`, so a library is set to a time each frame: `tl.time(TT)` (GSAP), `seekCSS(TT)` (CSS/WAAPI), `anim.goToAndStop(frame, true)` (Lottie), a precomputed table (Matter), a pose from `TT` (three.js), `u_t = TT` (GLSL). The shim runs only under `?export=1`; test the piece in a plain browser load as well.
+- A library that loads something pushes its promise to `window.LIBS_READY`; `renderFrame` waits for all of them.
+- Available: `waapi`, `gsap`, `d3`, `katex`, `mathjax`, `lottie`, `matter`, `three`, `glsl`. Sizes, licences, usage and the determinism result of each: [libs/README.md](libs/README.md). One 8 s showcase per library: `examples/<name>-demo/` (MathJax: `examples/maxwell-derivation/`).
+- Check every new library the same way: a piece that uses it must print `deterministic: true` from `tile.mjs` and export with exit 0.
+
 ## Formats: one piece, several shapes (optional)
 
 Ask at intake (question 2, multi-select). List them in `piece.json` `"formats": ["9:16", "1:1", "16:9"]` (the first is the main one). The starter's head reads `?format=` and sets `W`, `H`, `SAFE` and `CX`; scenes place things with `LX(fraction)`, `LY(fraction)` and size them with `UNIT`, and choose a different arrangement with `PORTRAIT` / `WIDE` where a shape needs it (a column of three on 9:16, a row of three on 16:9). Never crop a 9:16 render to 16:9.
@@ -127,8 +135,10 @@ A 45–60s piece has 10–15 scenes; split the drawing across agents once the st
 | `kit/board.js` | the storyboard renderer | steps 2–3 |
 | `kit/score-*.js` | synth (pluck, pad, drone, bass, sub, noiseHit, sweep, riser, chime, blip), loudness stage | scoring |
 | [templates/](templates/) | `piece/` (an 8s cut-paper morph), `beat-cut/` (a 6s hard-cut piece with a 16th rush), `style/` (a blank style kit for new looks) | step 2 |
+| [libs/](libs/README.md) | vendored libraries (`waapi gsap d3 katex mathjax lottie matter three glsl`) and how to seek each | a piece with `"libs"` |
 | `tools/` | build, tile, still, storyboard, export, review, textcheck, compare (reference vs frame), gallery, framehash (pixel-identity check), beats (a supplied track's beat map), capture (screenshots of the user's site), voice (a voice-over's lines and word times); `measure/` for references (`refs.mjs` for stills, `shotlog.py` for video) | throughout |
 | [examples/history-of-ai/](examples/history-of-ai/) | a full 60s worked example (cut paper) | when unsure how something fits |
+| `examples/*-demo/`, `examples/maxwell-derivation/` | one 8 s piece per library; a 20 s equation derivation (chalkboard, MathJax) | when using a library |
 
 ## Honesty about what's proven
 Formats F2 (chronology / morph chain) and F4 (mission) have each produced a piece that passed every check from the card alone; F5 (fixed-hero journey) has several. The others are documented from study but unproven — say so when you pick one. Cut paper and crosshatch have carried full pieces; riso, sketchbook, math and pixel each come from one or two finished pieces plus a demo; isometric was made from references with new-style.md and so far has only its demo; a style made from new references is new ground until it has carried a piece. WebGL motion design (ray-marched 3D, motion blur, bloom) is not a shipped style yet.

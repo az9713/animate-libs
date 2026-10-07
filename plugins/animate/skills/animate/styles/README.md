@@ -28,6 +28,9 @@ styles/<name>/
   demo/        a 4–8s piece in the style (piece.json + src/) that builds, tiles deterministic and morphs once
 ```
 
+## Libraries in a style
+A style's `demo/piece.json` may list `"libs"` (see [../libs/README.md](../libs/README.md)). A kit must not reuse a library's global name (`gsap`, `d3`, `KT`, `MJ`, `lottie`, `Matter`, `THREE`, `GLSL`) and must not call a library at load time except to build images or tables; seek it inside the scene. `chalkboard/kit.js` (`chEq`) is the worked case: it draws MathJax SVG paths with a per-term morph.
+
 ## The STYLE hooks (what kit/morph.js calls)
 
 The renderer draws nothing itself. Every `kit.js` ends with:
