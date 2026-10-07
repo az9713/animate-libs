@@ -104,8 +104,8 @@ if (inject.length) {
 if (assetFiles.length || libs.length) {
   const end = out.lastIndexOf('</script>');
   const wait = [assetFiles.length ? 'window.ASSETS_READY' : null, libs.length ? '...window.LIBS_READY' : null].filter(Boolean).join(', ');
-  const clock = libs.length ? 'const f = rf; rf = (t, ...a) => { window.__setClock(t); return f(t, ...a); }; ' : '';
-  out = out.slice(0, end) + `// ---- hold renderFrame until the assets and libraries have loaded (export, review and tile wait for it)\n{ let rf = window.renderFrame; window.renderFrame = undefined; Promise.all([${wait}]).then(() => { ${clock}window.renderFrame = rf; }); }\n` + out.slice(end);
+  const clock = libs.length ? 'const f = rf; rf = (t, ...a) => { window.__setClock && window.__setClock(t); return f(t, ...a); }; ' : '';
+  out = out.slice(0, end) + `// ---- hold renderFrame until the assets and libraries have loaded (export, review and tile wait for it)\n{ let rf = window.__rf = window.renderFrame; window.renderFrame = undefined; Promise.all([${wait}]).then(() => { ${clock}window.renderFrame = rf; }); }\n` + out.slice(end);
 }
 const m2 = out.match(/<script>([\s\S]*)<\/script>/);
 try { new vm.Script(m2[1], { filename: 'index.html' }); } catch (e) { console.error('syntax error:', e.message); process.exit(1); }

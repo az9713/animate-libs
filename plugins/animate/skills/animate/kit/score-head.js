@@ -7,14 +7,14 @@
 // live preview: rAF on the 24fps grid; click to hear the score (?t=1.5 freezes a frame)
 const QS = new URLSearchParams(location.search);
 const LIVE = { audio: null, t0: 0, start: performance.now() };
-if (!QS.has('export')) {
-  const cv = document.getElementById('c');
-  if (QS.has('t')) renderFrame(parseFloat(QS.get('t')));
+if (!QS.has('export')) (window.LIBS_READY ? Promise.all(window.LIBS_READY) : Promise.resolve()).then(() => {   // libs (equation images, fonts) load first
+  const cv = document.getElementById('c'), RF = window.__rf || renderFrame;   // __rf: the held renderFrame (tools/build.mjs)
+  if (QS.has('t')) RF(parseFloat(QS.get('t')));
   else {
     const tick = () => {
       const sec = LIVE.audio ? LIVE.audio.currentTime - LIVE.t0 : (performance.now() - LIVE.start) / 1000;
       const t = ((sec % LOOP_T) + LOOP_T) % LOOP_T;
-      renderFrame(Math.floor(t * FPS) / FPS);
+      RF(Math.floor(t * FPS) / FPS);
       requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
@@ -27,7 +27,7 @@ if (!QS.has('export')) {
     const src = ac.createBufferSource(); src.buffer = buf; src.loop = true; src.connect(ac.destination);
     LIVE.t0 = ac.currentTime + 0.05; src.start(LIVE.t0); LIVE.audio = ac;
   });
-}
+});
 
 const HZ = {
   A1: 55.0, D2: 73.42, F2: 87.31, A2: 110.0, D3: 146.83, F3: 174.61, A3: 220.0, C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23,
