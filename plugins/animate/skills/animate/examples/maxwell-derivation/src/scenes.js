@@ -28,26 +28,26 @@ function sceneDerivation() {
   const a1 = 1 - ev(cu.erase, 0.4);
   if (TT < cu.erase + 0.5) {
     ctx.save(); ctx.globalAlpha = a1;
-    eqDraw('divB', 'B', (TT - cu.toB) / 0.8, CX, 520, { frac: ev(cu.divB, 1.0), key: 'e1' });
-    eqDraw('E', null, 0, CX, 860, { frac: ev(cu.E, 1.4), key: 'e2' });
+    chEq('divB', 'B', (TT - cu.toB) / 0.8, CX, 520, { frac: ev(cu.divB, 1.0), key: 'e1' });
+    chEq('E', null, 0, CX, 860, { frac: ev(cu.E, 1.4), key: 'e2' });
     ctx.restore();
     chStroke([[CX - 330, 930], [CX + 330, 936]], { c: CB.yellow, w: 5, frac: ev(cu.E + 1.4, 0.5), key: 'ul1', alpha: a1 });
   }
   // stage 2 and 3: gauss -> gaussP -> wphi at y 760; amp -> ampB -> wA at y 1050
   if (TT >= cu.gauss) {
-    if (TT < cu.waves) eqDraw('gauss', 'gaussP', (TT - cu.toGaussP) / 0.9, CX, 760, { frac: ev(cu.gauss, 1.0), key: 'e3' });
-    else eqDraw('gaussP', 'wphi', (TT - cu.waves) / 1.0, CX, 760, { key: 'e3b' });
+    if (TT < cu.waves) chEq('gauss', 'gaussP', (TT - cu.toGaussP) / 0.9, CX, 760, { frac: ev(cu.gauss, 1.0), key: 'e3' });
+    else chEq('gaussP', 'wphi', (TT - cu.waves) / 1.0, CX, 760, { key: 'e3b' });
   }
   if (TT >= cu.amp) {
-    if (TT < cu.waves) eqDraw('amp', 'ampB', (TT - cu.toAmpB) / 0.9, CX, 1050, { frac: ev(cu.amp, 1.0), key: 'e4' });
-    else eqDraw('ampB', 'wA', (TT - cu.waves) / 1.0, CX, 1050, { key: 'e4b' });
+    if (TT < cu.waves) chEq('amp', 'ampB', (TT - cu.toAmpB) / 0.9, CX, 1050, { frac: ev(cu.amp, 1.0), key: 'e4' });
+    else chEq('ampB', 'wA', (TT - cu.waves) / 1.0, CX, 1050, { key: 'e4b' });
   }
   // the gauge, top of the board, underlined
   if (TT >= cu.gauge) {
-    eqDraw('gauge', null, 0, CX, 430, { frac: ev(cu.gauge, 1.0), key: 'e5' });
+    chEq('gauge', null, 0, CX, 430, { frac: ev(cu.gauge, 1.0), key: 'e5' });
     chStroke([[CX - 400, 505], [CX + 400, 511]], { c: CB.yellow, w: 5, frac: ev(cu.gauge + 1.0, 0.5), key: 'ul2' });
   }
-  if (TT >= cu.box) eqDraw('box', null, 0, CX, 1300, { frac: ev(cu.box, 1.0), key: 'e6', c: CB.grey });
+  if (TT >= cu.box) chEq('box', null, 0, CX, 1300, { frac: ev(cu.box, 1.0), key: 'e6', c: CB.grey });
   for (const [t0, t1, s, c] of CAPS) if (TT >= t0 && TT < t1) chText(s, CX, 1440, 56, c ?? CB.white, { align: 'center', frac: ev(t0, 0.8), key: 'cap' + s });
   chTag('potentials');
   chHero(900, 1330, 0.9, { key: 'stick', look: [CX, 760], mood: TT >= cu.wow ? 'wow' : TT >= cu.waves ? 'happy' : 'calm', hop: (TT - cu.wow) / 0.5 });

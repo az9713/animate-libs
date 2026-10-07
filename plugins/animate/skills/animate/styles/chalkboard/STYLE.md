@@ -81,3 +81,6 @@ Handwriting stack from the piece head (`HAND`): `"Segoe Print", "Chalkboard SE",
 ## Proven on
 
 `demo/` (6s, 9:16, 120 BPM, 24fps): a charge circle with field lines and the equation `E = −∇φ − ∂A/∂t` are written on; at 3.0s the circle morphs into a block with flow arrows and curling field lines, and `B = ∇×A` is written. `tile.mjs` prints `deterministic: true` (checked 2026-10-06). A plain browser load draws the frame.
+
+## Equation morph (`chEq`, added 2026-10-07)
+With `"libs": ["mathjax"]`, `MJ.make(id, tex, { size })` then `chEq(idA, idB, p, x, y, { frac, key, c })` draws equation A at p = 0 and equation B at p = 1. Glyphs with the same outline in both equations (matched in order by longest common subsequence) slide to their new place; the others fade. Call it with the same pair before and after the morph so the chalk speckle stays fixed. `idB = null` draws one equation (a left-to-right write-on with `frac`). Give A and B the same `size` or the matched glyphs change size. Example: `examples/maxwell-derivation`.
