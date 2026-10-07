@@ -1,6 +1,6 @@
 # Animate — procedural animation in any style, for Claude Code
 
-> **animate-libs** is a local extension of [cth9191/animate](https://github.com/cth9191/animate) (MIT). It adds nine vendored JavaScript libraries (`plugins/animate/skills/animate/libs/`), an equation path and five more styles. The upstream repo is unchanged. Install this copy: `claude plugin marketplace add <path to this folder>` then `claude plugin install animate-libs@animate-libs-local`. Use it as `/animate-libs`. Where the text below says `animate`, read `animate-libs`.
+> **animate-libs** extends [cth9191/animate](https://github.com/cth9191/animate) (MIT) with nine vendored JavaScript libraries (`plugins/animate-libs/skills/animate-libs/libs/`), an equation path and five more styles. It is an independent copy; the upstream repo is unchanged. One name is used everywhere: folder, marketplace, plugin and skill are all `animate-libs`. Where the text below says `animate`, read `animate-libs`. Install: `/plugin marketplace add <path to this folder>` then `/plugin install animate-libs@animate-libs`. Use it as `/animate-libs`.
 
 A Claude Code skill that makes short animated videos entirely in code: one `<canvas>`, drawn and scored procedurally, deterministic frame by frame, rendered to MP4 with a headless browser and ffmpeg. Explainers, histories, little stories — in one of the built-in styles, or in a new look matched from your own references.
 
@@ -65,20 +65,20 @@ npm i -g playwright && npx playwright install chromium
 As a plugin:
 
 ```
-/plugin marketplace add cth9191/animate
-/plugin install animate@animate
+/plugin marketplace add <path to the animate-libs folder>
+/plugin install animate-libs@animate-libs
 ```
 
-Or copy the skill folder by hand: `plugins/animate/skills/animate/` → `~/.claude/skills/animate/`.
+Or copy the skill folder by hand: `plugins/animate-libs/skills/animate-libs/` → `~/.claude/skills/animate-libs/`.
 
 ## Use
 
 ```
-/animate a 45-second history of the bicycle, cut paper
+/animate-libs a 45-second history of the bicycle, cut paper
 /animate how a hash map works, in the math style
-/animate a short about our API in the style of these screenshots: ./refs/
-/animate a 20s launch reel for https://my-product.com, cut to ./audio/song.mp3, vertical and square
-/animate a narrated 45s explainer of how DNS works, math style, 16:9, voice from ElevenLabs
+/animate-libs a short about our API in the style of these screenshots: ./refs/
+/animate-libs a 20s launch reel for https://my-product.com, cut to ./audio/song.mp3, vertical and square
+/animate-libs a narrated 45s explainer of how DNS works, math style, 16:9, voice from ElevenLabs
 ```
 
 Pieces are created in your project under `pieces/<name>/`. You can also drive the tools yourself:
@@ -102,7 +102,7 @@ Open any built `index.html` in a browser to preview it (click to hear the score;
 
 ## The example
 
-`plugins/animate/skills/animate/examples/history-of-ai/` is a complete 60-second cut-paper piece: 15 eras from Turing's "Can machines think?" (1950) to Claude Code (2025), a small orange "spark" that gains a ray each era, 13 shape-morph transitions, one hard cut on the payoff, and a synthesized score. Build it with `node plugins/animate/skills/animate/tools/build.mjs plugins/animate/skills/animate/examples/history-of-ai`, then export it.
+`plugins/animate-libs/skills/animate-libs/examples/history-of-ai/` is a complete 60-second cut-paper piece: 15 eras from Turing's "Can machines think?" (1950) to Claude Code (2025), a small orange "spark" that gains a ray each era, 13 shape-morph transitions, one hard cut on the payoff, and a synthesized score. Build it with `node plugins/animate-libs/skills/animate-libs/tools/build.mjs plugins/animate-libs/skills/animate-libs/examples/history-of-ai`, then export it.
 
 ## License
 
