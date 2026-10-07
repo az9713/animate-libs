@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GSAP: a timeline of named eases</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0b0b; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  GSAP SHOWCASE — 9:16, 8.0s @ 120 BPM, 24fps, kinetic type. The idea: GSAP is a timeline of named eases.
+//  0-1s   title GSAP + "one timeline, any ease".
+//  1-4s   five words enter one per beat, each with a different GSAP ease (its name is printed under it).
+//  4-5s   a stagger wave runs through every word and through the letter band.
+//  5-6s   the words drop out; 6.0-6.5 silence.
+//  6.5s   all five words enter at the same instant with the same duration: the eases race.
+//  A thin bar along the bottom shows the paused master timeline: every tween as a block, and the playhead = tl.time(TT).
+//  Build: node <skill>/tools/build.mjs <skill>/examples/gsap-showcase
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = '"Arial Black", "Segoe UI Black", "Helvetica Neue", Helvetica, Impact, Arial, sans-serif';   // only kit/board.js reads this
+const CX = 500;   // centre x of the safe area (x 60-940)
+
+const ERA_LIST = [[0, 8, () => sceneEases()]];
+const SHOTS = [
+  ['title',  0, 0.0, 1.0, 'GSAP, one timeline, any ease'],
+  ['eases',  0, 1.0, 4.0, 'five words enter, one per beat, each on its own ease'],
+  ['wave',   0, 4.0, 6.0, 'a stagger wave, then the words drop out'],
+  ['race',   0, 6.0, 8.0, 'silence, then all five eases race on the same clock'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'list',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [],
+  cues: { title: 0.0, period: 0.5, r0: 1.0, r1: 1.5, r2: 2.0, r3: 2.5, r4: 3.0, wave: 4.0, exit: 5.0, hit: 6.5 },
+  acts: [
+    { name: '1 Title', role: 'journey', t0: 0.0, t1: 1.0 },
+    { name: '2 Eases', role: 'peak', t0: 1.0, t1: 6.0 },
+    { name: '3 Silence', role: 'silence', t0: 6.0, t1: 6.5 },
+    { name: '4 Race', role: 'gift', t0: 6.5, t1: 8.0 },
+  ],
+  board: [
+    { t: 0.8, title: 'GSAP: one timeline, any ease', sound: 'a sub hit, a chime on the full stop', next: 'five words, one per beat' },
+    { t: 3.4, title: 'five eases, five motions', sound: 'a pluck per word', next: 'a stagger wave, then the words leave' },
+    { t: 7.4, title: 'the race', sound: 'silence, then the loudest hit on 6.5', next: 'ends' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

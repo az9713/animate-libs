@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KaTeX showcase</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #050506; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  KATEX SHOWCASE — 9:16, 8.0s @ 120 BPM, 24fps, motion on 1s, style: math, lib: katex.
+//  One idea: KaTeX typesets real LaTeX math instantly, as an image on the canvas. LaTeX source is typed on in mono,
+//  KaTeX turns it into a typeset equation, three times, each more complex (Euler, Gauss, the quadratic formula);
+//  then the three images are used as pictures: scaled, moved, tinted per term, drawn with drawImage.
+//  Colour code (one colour per quantity, in every equation): e teal, i pink, pi orange, x blue, a red, b green, c yellow.
+//  Build: node <skill>/tools/build.mjs <skill>/examples/katex-showcase
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = 'Cambria, "Cambria Math", "Latin Modern Roman", "CMU Serif", "STIX Two Text", "Times New Roman", Georgia, serif';   // the storyboard's title font
+const CX = 500;   // centre x of the safe area (x 60-940)
+
+const ERA_LIST = [[0, DURATION, () => sceneShowcase()]];
+const SHOTS = [
+  ['source',  0, 0.0, 5.0, 'LaTeX source is typed, KaTeX typesets it: three equations, each more complex'],
+  ['picture', 0, 5.0, 6.5, 'the images move, scale and are tinted per term'],
+  ['payoff',  0, 6.5, 8.0, 'the quadratic formula, boxed as the image it is, drawn with drawImage'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'catalogue',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [],
+  cues: { title: 0.0, eu: 1.0, ga: 2.25, qu: 3.75, move: 5.0, tint: 5.5, box: 6.5, hit: 7.0 },
+  acts: [
+    { name: '1 Source',  role: 'build',   t0: 0.0, t1: 5.0 },
+    { name: '2 Picture', role: 'journey', t0: 5.0, t1: 6.5 },
+    { name: '3 Payoff',  role: 'gift',    t0: 6.5, t1: 8.0 },
+  ],
+  board: [
+    { t: 1.9, title: 'e^{i pi} + 1 = 0', sound: 'typing ticks, a rising pluck when it is typeset', next: 'the Gaussian integral' },
+    { t: 4.9, title: 'three equations typeset', sound: 'the same rise on the third', next: 'the images are used as pictures' },
+    { t: 7.4, title: 'drawImage', sound: 'silence, then the chord stab', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

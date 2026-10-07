@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>three.js showcase</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #e6e6ea; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  THREE.JS SHOWCASE — 9:16, 8.0s @ 120 BPM, 24fps, isometric style. One split frame: the flat isometric line-art
+//  cube above, the same cube as a real three.js mesh below. A light orbits it (shading changes), the camera orbits
+//  (perspective: the edges converge), a torus knot swings round it (depth: it occludes and is occluded).
+//  Build: node <skill>/tools/build.mjs <this piece dir>
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const CX = 470;
+
+const ERA_LIST = [[0, DURATION, () => sceneSplit()]];
+const SHOTS = [
+  ['title',       0, 0.0, 1.0,      'big title: three.js, real 3D on a 2D canvas'],
+  ['light',       0, 1.0, 3.5,      'flat cube above, lit mesh below; the light orbits and the shading changes'],
+  ['perspective', 0, 3.5, 5.0,      'the camera orbits; the cube edges converge'],
+  ['depth',       0, 5.0, 6.5,      'the torus knot swings round the cube and occludes it'],
+  ['payoff',      0, 6.5, DURATION, 'after the hush, all four labels land'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'single-scene',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [],
+  cues: { panels: 1.0, light: 1.5, shading: 2.5, persp: 3.5, depth: 5.0, hush: 6.0, hit: 6.5 },
+  acts: [
+    { name: '1 Look', role: 'build', t0: 0.0, t1: 6.5 },
+    { name: '2 Real', role: 'gift',  t0: 6.5, t1: DURATION },
+  ],
+  board: [
+    { t: 2.5, title: 'flat above, lit below', sound: 'a soft pad, plucks on each label', next: 'the camera orbits' },
+    { t: 7.2, title: 'the knot occludes the cube', sound: 'a stab and a sub after half a second of silence', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

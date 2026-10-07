@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matter.js showcase</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1d1a17; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  MATTER.JS SHOWCASE — 9:16, 8.0s @ 120 BPM, 24fps, sketchbook. A pencil-sketch physics toy: a ball rolls down a ramp,
+//  lands on a seesaw (a plank pinned by a constraint), rolls into a pyramid of boxes; a pendulum chain swings all the while;
+//  a heavy ball ends it on the seesaw. Matter.js is PRECOMPUTED (src/sim.js): the scene only reads the stored table, and
+//  the handwritten notes and the body/contact counter are timed by the engine's own collision events.
+//  Build: node <skill>/tools/build.mjs <this piece dir>
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Comic Sans MS", "Chalkboard SE", cursive';
+const CX = 500;
+
+const ERA_LIST = [[0, DURATION, () => sceneToy()]];
+const SHOTS = [
+  ['toy', 0, 0.0, DURATION, 'a sketched physics toy: ramp, seesaw, pyramid, pendulum; every move is read from a Matter.js table'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'single-scene',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [],
+  cues: { title: 0.0, shrink: 0.9, release: 1.0, big: 5.67 },
+  acts: [
+    { name: '1 Title',  role: 'build',   t0: 0.0, t1: 1.0 },
+    { name: '2 Toy',    role: 'journey', t0: 1.0, t1: 6.5 },
+    { name: '3 Thud',   role: 'gift',    t0: 6.5, t1: 8.0 },
+  ],
+  board: [
+    { t: 0.8, title: 'Matter.js, real physics', sound: 'pencil scratches', next: 'the title shrinks to a tag; the ball is let go' },
+    { t: 2.3, title: 'ramp, friction, seesaw', sound: 'soft knocks per collision', next: 'the ball rolls into the pyramid' },
+    { t: 6.9, title: 'the heavy ball lands', sound: 'silence, then one deep hit', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLSL showcase</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0910; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; image-rendering: pixelated; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  GLSL SHOWCASE — 9:16, 8.0s @ 120 BPM, 24fps, pixel style (216x384 UI, 5 px per pixel).
+//  The one idea: a shader is ONE small function that runs once for every pixel. The source sits beside a grid;
+//  a 16x16 grid is filled cell by cell by that function, then the SAME source is drawn at 32, 64 and 128 cells
+//  until it is a smooth ripple field. Every picture is the real output of the shader at that resolution.
+//  Build: node <skill>/tools/build.mjs <skill>/examples/glsl-showcase
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;   // 0.5 / 0.25 / 0.125s = 12 / 6 / 3 frames
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = '"Segoe UI", "Helvetica Neue", Arial, sans-serif';   // only the storyboard sheet uses a system font
+const CX = 470;
+
+// the story clock (seconds, all on the 8th grid)
+const T_CODE = 1.0, T_SCAN_END = 2.75, T_32 = 3.0, T_64 = 4.0, T_128 = 5.0, T_SILENCE = 6.5, T_PAYOFF = 7.0;
+const ERA_LIST = [[0, DURATION, () => sceneShader()]];
+const SHOTS = [
+  ['title',   0, 0.0,       T_CODE,    'the title: GLSL, one function, every pixel'],
+  ['evaluate', 0, T_CODE,    T_32,      'the 16x16 grid is filled cell by cell by the function'],
+  ['refine',  0, T_32,      T_SILENCE, 'the same source at 32, 64 and 128 cells'],
+  ['payoff',  0, T_SILENCE, DURATION,  'silence, then: same code, every pixel'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'live-demo',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [T_CODE, T_32, T_64, T_128],
+  morphs: [],
+  cues: { scan: T_CODE, scanEnd: T_SCAN_END, r32: T_32, r64: T_64, r128: T_128, hit: T_PAYOFF },
+  acts: [
+    { name: '1 Title',   role: 'build',   t0: 0.0,       t1: T_CODE },
+    { name: '2 Evaluate', role: 'journey', t0: T_CODE,   t1: T_32 },
+    { name: '3 Refine',  role: 'peak',    t0: T_32,      t1: T_SILENCE },
+    { name: '4 Silence', role: 'silence', t0: T_SILENCE, t1: T_PAYOFF },
+    { name: '5 Same code', role: 'gift',  t0: T_PAYOFF,  t1: 7.625 },
+    { name: '6 Out',     role: 'goodbye', t0: 7.625,     t1: DURATION },
+  ],
+  board: [
+    { t: 0.5,  title: 'GLSL: one function, every pixel', sound: 'a power-on stab, a rising sweep', next: 'the source and an empty grid' },
+    { t: 2.0,  title: 'cell by cell', sound: 'a tick per step, rising', next: 'the grid refines' },
+    { t: 4.25, title: '64x64', sound: 'a blip per refinement', next: 'the field turns smooth' },
+    { t: 7.25, title: 'same code, every pixel', sound: 'the loudest hit', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

@@ -1,0 +1,9 @@
+{
+  "name": "d3-showcase",
+  "title": "D3: one dataset, any shape",
+  "format": { "width": 1080, "height": 1920, "fps": 24, "bpm": 120, "duration": 8.0, "frames": 192 },
+  "storyFormat": "one data table morphing through four chart shapes (riso)",
+  "style": "riso",
+  "review": { "safe": { "top": 240, "bottom": 420, "right": 140 }, "refs": {} },
+  "libs": ["d3"]
+}

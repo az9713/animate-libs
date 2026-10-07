@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D3 showcase</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1d1a17; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  D3 SHOWCASE — 9:16, 8.0s @ 120 BPM, 24fps, riso. "D3 turns one dataset into any shape."
+//  One table of 8 numbers is the constant. It becomes bars (scaleBand + scaleLinear), a line (d3.line,
+//  curveMonotoneX), a donut (d3.pie + d3.arc) and a radial area (d3.areaRadial). Each shape is drawn from
+//  the same 8 values; d3.interpolate morphs one outline into the next while the scale readout updates.
+//  Build: node <skill>/tools/build.mjs <skill>/examples/d3-showcase
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const PRINTF = '"Arial Black", "Helvetica Neue", "Franklin Gothic Heavy", Impact, "DejaVu Sans", "Liberation Sans", sans-serif';
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Comic Sans MS", "Chalkboard SE", cursive';
+const CX = 470;
+
+// one era, no bridges: the shape morphs are drawn inside the scene with d3.interpolate
+const ERA_LIST = [[0, DURATION, () => sceneD3()]];
+const SHOTS = [
+  ['title',  0, 0.0,  1.25, 'D3 and the data strip: data in, any shape out'],
+  ['bars',   0, 1.25, 2.75, 'the 8 numbers become bars'],
+  ['line',   0, 2.75, 4.25, 'the bars become a line'],
+  ['donut',  0, 4.25, 5.75, 'the line becomes a donut'],
+  ['radial', 0, 5.75, DURATION, 'the donut becomes a radial area; the hit shows all four'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [],
+  cues: { grow: 1.25, m1: 2.5, m2: 4.0, m3: 5.5, hit: 7.0 },
+  acts: [
+    { name: '1 Table',  role: 'build',   t0: 0.0, t1: 2.5 },
+    { name: '2 Shapes', role: 'journey', t0: 2.5, t1: 6.5 },
+    { name: '3 Any',    role: 'gift',    t0: 6.5, t1: 8.0 },
+  ],
+  board: [
+    { t: 0.5, title: 'D3, data in any shape out', sound: 'a sub thump, a pluck', next: 'bars rise from the strip' },
+    { t: 2.0, title: 'bars: scaleBand + scaleLinear', sound: 'eight plucks, pitch follows value', next: 'bars flatten into a line' },
+    { t: 3.5, title: 'line: curveMonotoneX', sound: 'a rising run left to right', next: 'the line bends into a donut' },
+    { t: 5.0, title: 'donut: pie + arc', sound: 'a sweep, eight clockwise notes', next: 'the donut becomes a radial area' },
+    { t: 7.4, title: 'all four from one table', sound: 'silence, then the hit and a chord', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

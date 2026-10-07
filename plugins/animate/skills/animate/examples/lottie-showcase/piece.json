@@ -1,0 +1,9 @@
+{
+  "name": "lottie-showcase",
+  "title": "Lottie showcase: one JSON file, any size",
+  "format": { "width": 1080, "height": 1920, "fps": 24, "bpm": 120, "duration": 8.0, "frames": 192 },
+  "storyFormat": "single stage: the JSON panel and the animation it makes, then three sizes",
+  "style": "flat-vector",
+  "libs": ["lottie"],
+  "review": { "safe": { "top": 240, "bottom": 420, "right": 140 }, "refs": {} }
+}

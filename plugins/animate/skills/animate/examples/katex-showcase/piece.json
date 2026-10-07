@@ -1,0 +1,9 @@
+{
+  "name": "katex-showcase",
+  "title": "KaTeX showcase",
+  "format": { "width": 1080, "height": 1920, "fps": 24, "bpm": 120, "duration": 8.0, "frames": 192 },
+  "storyFormat": "catalogue (3 equations, each more complex)",
+  "style": "math",
+  "libs": ["katex"],
+  "review": { "safe": { "top": 240, "bottom": 420, "right": 140 }, "refs": {} }
+}

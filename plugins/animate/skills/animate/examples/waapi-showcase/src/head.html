@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS WAAPI showcase</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #050805; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  CSS / WAAPI SHOWCASE — 9:16, 8.0s @ 120 BPM, 24fps, terminal style (motion on 1s).
+//  0-1s: a title card ('CSS / WAAPI', 'no library: the browser animates'). 1-8s: on the left the Element.animate source types on;
+//  on the right the element those keyframes drive (a bar of block characters), a getComputedStyle readout and the
+//  cubic-bezier curve with a moving dot. Every number on the right is read from the browser's own animation (libs/waapi.js).
+//  Build: node <skill>/tools/build.mjs <skill>/examples/waapi-showcase
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const CX = 500;   // caption centre x: the middle of the safe area (x 60-940)
+
+const ERA_LIST = [[0, 1, () => sceneTitle()], [1, 8, () => sceneRun()]];
+const SHOTS = [
+  ['title', 0, 0.0, 1.0, 'big title: CSS / WAAPI, no library: the browser animates'],
+  ['run', 1, 1.0, 8.0, 'the source types on; the element it drives, its computed style and its easing curve run live'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'one-take',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [1.0],
+  morphs: [],
+  cues: { type: 1.15, run: 2.6, rev: 4.0, fwd: 5.4, hit: 7.5 },
+  acts: [
+    { name: '1 Write', role: 'build', t0: 0.0, t1: 6.0 },
+    { name: '2 Done', role: 'gift', t0: 6.0, t1: 8.0 },
+  ],
+  board: [
+    { t: 0.6, title: 'the claim', sound: 'key clicks, a low drone', next: 'the source types on' },
+    { t: 3.2, title: 'the browser runs the keyframes', sound: 'a rising blip as the element grows', next: 'the animation reverses, then runs forward again' },
+    { t: 7.8, title: 'done: 0.4 KB helper', sound: 'silence, then the loudest hit', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

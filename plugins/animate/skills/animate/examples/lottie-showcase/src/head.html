@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lottie showcase</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1f2a5a; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  LOTTIE SHOWCASE — 9:16, 8.0s @ 120 BPM, 24fps, flat vector. One idea: Lottie plays a designer's animation from a
+//  small JSON file. A JSON panel shows the real keyframes of the animation (read from the same object that Lottie loads);
+//  the highlighted keyframe follows the playhead. Below it, the animation those keyframes make, with a frame counter and a
+//  scrubber. Then the same JSON plays at three sizes, scrubs back to frame 0, and launches on the loudest hit.
+//  Build: node <skill>/tools/build.mjs <skill>/examples/lottie-showcase
+// =====================================================================
+const FPS = 24, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 8.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const HAND = '"Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif';
+const CX = 500;   // caption centre x: the middle of the safe area (x 60-940)
+
+// one stage, no cuts and no morphs: the panels, the animation and the scrubber stay put while the data changes
+const ERA_LIST = [[0, DURATION, () => sceneMain()]];
+const SHOTS = [
+  ['title',  0, 0.0, 1.0, 'big title "Lottie" and "one JSON file, any size"'],
+  ['data',   0, 1.0, 4.0, 'JSON panel and the animation it makes; the playhead moves through the keyframes'],
+  ['sizes',  0, 4.0, 5.5, 'the same JSON plays at three sizes'],
+  ['scrub',  0, 5.5, 7.0, 'the scrubber runs back to frame 0, then silence'],
+  ['launch', 0, 7.0, 8.0, 'the loudest hit: all three sizes launch together'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'explainer',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [],
+  cues: { title: 0.05, sub: 0.35, panel: 1.3, card: 1.5, play: 1.8, sizes: 4.0, scrub: 5.5, hit: 7.0 },
+  acts: [
+    { name: '1 Title',   role: 'build',   t0: 0.0, t1: 1.0 },
+    { name: '2 Data',    role: 'journey', t0: 1.0, t1: 4.0 },
+    { name: '3 Sizes',   role: 'turn',    t0: 4.0, t1: 5.5 },
+    { name: '4 Scrub',   role: 'silence', t0: 5.5, t1: 7.0 },
+    { name: '5 Launch',  role: 'gift',    t0: 7.0, t1: 8.0 },
+  ],
+  board: [
+    { t: 0.8, title: 'the title', sound: 'three soft plucks', next: 'the panels open' },
+    { t: 3.0, title: 'JSON and its animation', sound: 'a pad, a pluck on each property', next: 'three sizes' },
+    { t: 4.9, title: 'three sizes', sound: 'a low hit, plucks', next: 'scrub back' },
+    { t: 6.0, title: 'scrub to frame 0', sound: 'a falling sweep, then silence', next: 'launch' },
+    { t: 7.4, title: 'launch', sound: 'the loudest hit', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

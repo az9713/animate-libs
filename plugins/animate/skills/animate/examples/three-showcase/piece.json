@@ -1,0 +1,25 @@
+{
+  "name": "three-showcase",
+  "title": "three.js: real 3D on a 2D canvas",
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 24,
+    "bpm": 120,
+    "duration": 8,
+    "frames": 192
+  },
+  "storyFormat": "single scene, split frame (flat line art above, real 3D below)",
+  "style": "isometric",
+  "review": {
+    "safe": {
+      "top": 240,
+      "bottom": 420,
+      "right": 140
+    },
+    "refs": {}
+  },
+  "libs": [
+    "three"
+  ]
+}
