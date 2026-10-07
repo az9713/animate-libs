@@ -32,23 +32,20 @@ class Maxwell(Scene):
 
         def cap(text, color=WHITE):
             c = Text(text, font_size=26, color=color).move_to([0, cap_y, 0])
-            anims = [Write(c)]
-            if self.cap is not None:
-                anims.append(FadeOut(self.cap))
-            self.cap = c
-            return anims
+            old, self.cap = self.cap, c
+            return [Write(c)] if old is None else [ReplacementTransform(old, c)]
 
-        divB = eq(r"{{\nabla\cdot}}{{\mathbf{B}}}{{=}}{{0}}", Y(520))
-        B = eq(r"{{\mathbf{B}}}{{=}}{{\nabla\times\mathbf{A}}}", Y(520))
-        E = eq(r"{{\mathbf{E}}}{{=-\nabla\varphi-\frac{\partial\mathbf{A}}{\partial t}}}", Y(860))
-        gauss = eq(r"{{\nabla\cdot}}{{\mathbf{E}}}{{=\frac{\rho}{\varepsilon_0}}}", Y(760))
-        gaussP = eq(r"{{\nabla\cdot}}{{\left(-\nabla\varphi-\frac{\partial\mathbf{A}}{\partial t}\right)}}{{=\frac{\rho}{\varepsilon_0}}}", Y(760))
-        amp = eq(r"{{\nabla\times}}{{\mathbf{B}}}{{=\mu_0}}{{\bigl(}}{{\mathbf{J}}}{{+\varepsilon_0\frac{\partial\mathbf{E}}{\partial t}\bigr)}}", Y(1050))
-        ampB = eq(r"{{\nabla\times}}{{\bigl(\nabla\times\mathbf{A}\bigr)}}{{=\mu_0}}{{\bigl(}}{{\mathbf{J}}}{{+\varepsilon_0\frac{\partial\mathbf{E}}{\partial t}\bigr)}}", Y(1050))
+        divB = eq(r"{{\nabla\cdot}} {{\mathbf{B}}} {{=}} {{0}}", Y(520))
+        B = eq(r"{{\mathbf{B}}} {{=}} {{\nabla\times\mathbf{A}}}", Y(520))
+        E = eq(r"{{\mathbf{E}}} {{=-\nabla\varphi-\frac{\partial\mathbf{A}}{\partial t}}}", Y(860))
+        gauss = eq(r"{{\nabla\cdot}} {{\mathbf{E}}} {{=\frac{\rho}{\varepsilon_0}}}", Y(760))
+        gaussP = eq(r"{{\nabla\cdot}} {{\left(-\nabla\varphi-\frac{\partial\mathbf{A}}{\partial t}\right)}} {{=\frac{\rho}{\varepsilon_0}}}", Y(760))
+        amp = eq(r"{{\nabla\times}} {{\mathbf{B}}} {{=\mu_0}} {{\bigl(}} {{\mathbf{J}}} {{+\varepsilon_0\frac{\partial\mathbf{E}}{\partial t}\bigr)}}", Y(1050))
+        ampB = eq(r"{{\nabla\times}} {{\bigl(\nabla\times\mathbf{A}\bigr)}} {{=\mu_0}} {{\bigl(}} {{\mathbf{J}}} {{+\varepsilon_0\frac{\partial\mathbf{E}}{\partial t}\bigr)}}", Y(1050))
         gauge = eq(r"\nabla\cdot\mathbf{A}+\frac{1}{c^{2}}\frac{\partial\varphi}{\partial t}=0", Y(430))
-        wphi = eq(r"{{\Box\varphi}}{{=\frac{\rho}{\varepsilon_0}}}", Y(760))
-        wA = eq(r"{{\Box\mathbf{A}}}{{=\mu_0}}{{\mathbf{J}}}", Y(1050))
-        box = eq(r"\Box=\frac{1}{c^{2}}\frac{\partial^{2}}{\partial t^{2}}-\nabla^{2}", Y(1300))
+        wphi = eq(r"{{\Box\varphi}} {{=\frac{\rho}{\varepsilon_0}}}", Y(760))
+        wA = eq(r"{{\Box\mathbf{A}}} {{=\mu_0}} {{\mathbf{J}}}", Y(1050))
+        box = eq(r"\Box=\frac{1}{c^{2}}\frac{\partial^{2}}{\partial t^{2}}-\nabla^{2}", Y(1245), 3.2)
         box.set_color("#b9b8ad")
         # match the A/B pairs' height so the transforms do not rescale: same scale factor per pair is not forced; see the report.
 
@@ -69,9 +66,8 @@ class Maxwell(Scene):
         self.wait(0.3)                                                               # 10.3
         self.play(TransformMatchingTex(amp, ampB), *cap("swap B for its potential", BLUE), run_time=0.9)    # 11.2
         self.wait(1.1)                                                               # 12.3
-        ul = Line([-1.6, Y(505), 0], [1.6, Y(511), 0], color=YELLOW, stroke_width=3)
         self.play(Write(gauge), *cap("choose the Lorenz gauge", YELLOW), run_time=1.0)   # 13.3
-        self.play(Create(ul), run_time=0.5)                                          # 13.8
+        self.play(Create(Underline(gauge, color=YELLOW, buff=0.12)), run_time=0.5)                                          # 13.8
         self.wait(2.2)                                                               # 16.0
         self.play(TransformMatchingTex(gaussP, wphi), TransformMatchingTex(ampB, wA), *cap("the wave equations", GREEN), run_time=1.0)  # 17.0
         self.wait(0.3)                                                               # 17.3

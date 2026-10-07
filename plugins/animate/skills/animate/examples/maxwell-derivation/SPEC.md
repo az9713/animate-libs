@@ -55,3 +55,6 @@ Not claimed: the loop closes; the algebra from gaussP/ampB to wphi/wA is shown.
 | Gotchas | none hit after the score cue fix | frame width for portrait (`config.frame_width = 4.5`); underline and caption positions need units, not pixels |
 
 Finding: on this storyboard both routes give term-matched morphs in about the same render time. Route A costs 60 lines once and adds nothing to maintain per equation; Route B costs a hand-made grouping per equation and adds a second toolchain (Python, MiKTeX) with no audio or review path. Not shown by this test: morphs that need a non-rigid motion of glyphs (manim has path interpolation for arbitrary shapes), 3D, or long programs where manim's caching helps.
+
+### Second manim take (after fixes, 2026-10-07)
+Fixes: `config.frame_width = 4.5`; `{{ }}` groups must be separated by a space (`{{a}} {{b}}`; adjacent `{{a}}{{b}}` merge into one group, so the first take matched fewer terms than intended); captions use `ReplacementTransform` (no overlap); the underline is `Underline(gauge)`; the definition line moved up. Render: 32-33 s; 476 frames (19.833 s); 1.17 MB. **Determinism: two renders gave identical frame hashes (`ffmpeg -f framemd5`).** Route A: `tile.mjs` `deterministic: true`. Route A after the score fix: `review.mjs` all PASS, loudest window 16.0 s with 2.0 s of silence before it, -14.3 LUFS, true peak -1.0 dBFS.
