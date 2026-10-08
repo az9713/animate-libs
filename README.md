@@ -4,9 +4,15 @@
 
 A Claude Code skill that makes short animated videos entirely in code: one `<canvas>`, drawn and scored procedurally, deterministic frame by frame, rendered to MP4 with a headless browser and ffmpeg. Explainers, histories, little stories — in one of the built-in styles, or in a new look matched from your own references.
 
-![the built-in styles](docs/styles.png)
+## Library demos
 
-*The built-in styles, each a frame from its demo piece: cut paper, crosshatch ink, riso print, sketchbook, math, pixel, isometric — and the eighth slot: any other look, made from your references.*
+One short piece per vendored library, each in a different style. Below each video: the library, then the style it is drawn in. The videos are in `docs/videos/`; the piece sources are in `plugins/animate-libs/skills/animate-libs/examples/`.
+
+<table>
+<tr><td align="center" width="33%"><video src="docs/videos/waapi.mp4" width="240" controls loop muted playsinline></video><br><b>CSS / WAAPI</b><br>style: terminal</td><td align="center" width="33%"><video src="docs/videos/gsap.mp4" width="240" controls loop muted playsinline></video><br><b>GSAP</b><br>style: kinetic-type</td><td align="center" width="33%"><video src="docs/videos/d3.mp4" width="240" controls loop muted playsinline></video><br><b>D3</b><br>style: riso</td></tr>
+<tr><td align="center" width="33%"><video src="docs/videos/katex.mp4" width="240" controls loop muted playsinline></video><br><b>KaTeX</b><br>style: math</td><td align="center" width="33%"><video src="docs/videos/mathjax.mp4" width="240" controls loop muted playsinline></video><br><b>MathJax</b><br>style: chalkboard</td><td align="center" width="33%"><video src="docs/videos/lottie.mp4" width="240" controls loop muted playsinline></video><br><b>Lottie</b><br>style: flat-vector</td></tr>
+<tr><td align="center" width="33%"><video src="docs/videos/matter.mp4" width="240" controls loop muted playsinline></video><br><b>Matter.js</b><br>style: sketchbook</td><td align="center" width="33%"><video src="docs/videos/three.mp4" width="240" controls loop muted playsinline></video><br><b>three.js</b><br>style: isometric</td><td align="center" width="33%"><video src="docs/videos/glsl.mp4" width="240" controls loop muted playsinline></video><br><b>GLSL</b><br>style: pixel</td></tr>
+</table>
 
 ## How it works
 
