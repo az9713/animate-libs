@@ -1,6 +1,6 @@
 # Animate — procedural animation in any style, for Claude Code
 
-> **animate-libs** extends [cth9191/animate](https://github.com/cth9191/animate) (MIT) with nine vendored JavaScript libraries (`plugins/animate-libs/skills/animate-libs/libs/`), an equation path and five more styles. It is an independent copy; the upstream repo is unchanged. One name is used everywhere: folder, marketplace, plugin and skill are all `animate-libs`. Where the text below says `animate`, read `animate-libs`. Install: `/plugin marketplace add <path to this folder>` then `/plugin install animate-libs@animate-libs`. Use it as `/animate-libs`.
+> **animate-libs** extends [cth9191/animate](https://github.com/cth9191/animate) (MIT) with nine vendored JavaScript libraries (`plugins/animate-libs/skills/animate-libs/libs/`), an equation path and five more styles. It is an independent copy; the upstream repo is unchanged. One name is used everywhere: folder, marketplace, plugin and skill are all `animate-libs`. Where the text below says `animate`, read `animate-libs`. Install: `/plugin marketplace add az9713/animate-libs` then `/plugin install animate-libs@animate-libs`. Use it as `/animate-libs`.
 
 A Claude Code skill that makes short animated videos entirely in code: one `<canvas>`, drawn and scored procedurally, deterministic frame by frame, rendered to MP4 with a headless browser and ffmpeg. Explainers, histories, little stories — in one of the built-in styles, or in a new look matched from your own references.
 
@@ -65,7 +65,7 @@ npm i -g playwright && npx playwright install chromium
 As a plugin:
 
 ```
-/plugin marketplace add <path to the animate-libs folder>
+/plugin marketplace add az9713/animate-libs
 /plugin install animate-libs@animate-libs
 ```
 

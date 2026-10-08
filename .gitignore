@@ -7,3 +7,4 @@ __pycache__/
 # built files (tools/build.mjs makes them from src/ + kit/ + the style)
 plugins/**/index.html
 plugins/**/review/
+HANDOFF.md
